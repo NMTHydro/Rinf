@@ -23,8 +23,8 @@ dgketchum 24 JUL 2016
 """
 
 import os
-from pandas import DataFrame
-from numpy import loadtxt
+from pandas import DataFrame, to_numeric
+from numpy import loadtxt, array
 from datetime import datetime
 import matplotlib.pyplot as plt
 
@@ -37,17 +37,21 @@ def compare_ppt_discharge(combo_path):
     for item in combo_files:
         gauge_key = item[:8]
         start_yr_str, end_yr_str = item[-13:-4].split('_')
-        start, end = datetime(start_yr_str, 0, 0), datetime(end_yr_str, 0, 0)
+        start, end = datetime(int(start_yr_str), 1, 1), datetime(int(end_yr_str), 1, 1)
+        gauge_name = item.strip('{}_'.format(str(gauge_key))).strip('{}_{}.csv'.format(start_yr_str, end_yr_str))
         # csv in format: [YYY/MM/DD, q[cfs], ppt[m**3] #
         # no headers in them #
-        arr_cols = ['Date', 'Discharge_[cfs]', 'Precipitation_[m^3]']
-        col_check = loadtxt(item, dtype=str, skiprows=0, delimiter=',', usecols=arr_cols)
-        print 'headers being read: \n {}'.format(col_check[:1, :])
-        csv = loadtxt(item, dtype=str, skiprows=3, delimiter=',', usecols=arr_cols)
-        amf_data = append(amf_data, csv, axis=0)
+        cols = ['Discharge_[cfs]', 'Precipitation_[m^3]']
+        csv = loadtxt(item, dtype=str, delimiter=',')
+        ind = csv[:, 0]
+        data = csv[:, 1:]
+        data = array(data, dtype=float)
+        df = DataFrame(data, index=ind, columns=cols)
+        data_dict.update({gauge_key: {'Name': gauge_name, 'Start_End': (start, end), 'Data': df}})
 
-        df = DataFrame(amf_data, index=new_ind, columns=columns)
-
+    for key, series in data_dict.iteritems():
+        # plot time series of discharge and precip
+        pass
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
