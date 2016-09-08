@@ -3,7 +3,6 @@ from dateutil import rrule
 import arcpy, os, sys
 from arcpy import env
 import numpy as np
-##import matplotlib.pyplot as plt
 
 #  Set workspace to GIS gauge data location, loop through individual watersheds
 
