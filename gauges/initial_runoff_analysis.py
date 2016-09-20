@@ -49,8 +49,18 @@ def compare_ppt_discharge(combo_path):
         df = DataFrame(data, index=ind, columns=cols)
         data_dict.update({gauge_key: {'Name': gauge_name, 'Start_End': (start, end), 'Data': df}})
         print data_dict
+
+
+
+    '''need to find out the name of the variables'''
     for key, series in data_dict.iteritems():
-        # plot time series of discharge and precip #
+        plt.figure(1)
+        plt.subplot(211)
+        plt.plot(ind,data[:,1])
+
+        plt.subplot(212)
+        plt.plot(ind,data[:,2])
+        plt.show()# plot time series of discharge and precip #
         # put in two subplots, one of cumulative discharge, the other of cumulative precipitation #
         pass
 
