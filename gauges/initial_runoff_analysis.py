@@ -47,13 +47,16 @@ def compare_ppt_discharge(combo_path):
         data = csv[:, 1:]
         data = array(data, dtype=float)
         df = DataFrame(data, index=ind, columns=cols)
-        data_dict.update({gauge_key: {'Name': gauge_name, 'Start_End': (start, end), 'Data': df}})
+        data_dict[gauge_key] = {'Name': gauge_name, 'Start_End': (start, end), 'Data': df}
         print data_dict
 
 
 
     '''need to find out the name of the variables'''
     for key, series in data_dict.iteritems():
+        df = series['Data']
+        df.plot(kind='line',subplots=2)
+        '''data.plot.line()'''
         plt.figure(1)
         plt.subplot(211)
         plt.plot(ind,data[:,1])
@@ -65,15 +68,16 @@ def compare_ppt_discharge(combo_path):
         pass
 
 if __name__ == '__main__':
-    home = os.path.expanduser('~')
+  home = os.path.expanduser('~')
     print 'home: {}'.format(home)
-    gauges = os.path.join(home, 'Documents', 'Recharge', 'Gauges')
+   ''' gauges = os.path.join(home, 'Documents', 'Recharge', 'Gauges')
     q_ppt_data_path = os.path.join(gauges, 'BasinPPT_GaugeQ_NM')
     q_path = os.path.join(gauges, 'GaugeQ')
+    compare_ppt_discharge(q_ppt_data_path)'''
+    q_ppt_data_path = os.path.join("d:\\Rinf","BasinPPT")
     compare_ppt_discharge(q_ppt_data_path)
-
 # ============= EOF =============================================
-    
+
 
 
 
