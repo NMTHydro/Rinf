@@ -55,26 +55,20 @@ def compare_ppt_discharge(combo_path):
     '''need to find out the name of the variables'''
     for key, series in data_dict.iteritems():
         df = series['Data']
-        df.plot(kind='line',subplots=2)
-        '''data.plot.line()'''
-        plt.figure(1)
-        plt.subplot(211)
-        plt.plot(ind,data[:,1])
+        ax = df.plot(kind='line',subplots=2, title = series['Name'])
+        plt.show()
+        # plt.subplot(df[:, 0], df[:. 1])
+        fig = ax.get_figure()
+        #how to call the name here
+        fig.savefig()
 
-        plt.subplot(212)
-        plt.plot(ind,data[:,2])
-        plt.show()# plot time series of discharge and precip #
+        # plot time series of discharge and precip #
         # put in two subplots, one of cumulative discharge, the other of cumulative precipitation #
         pass
 
 if __name__ == '__main__':
-  home = os.path.expanduser('~')
-    print 'home: {}'.format(home)
-   ''' gauges = os.path.join(home, 'Documents', 'Recharge', 'Gauges')
-    q_ppt_data_path = os.path.join(gauges, 'BasinPPT_GaugeQ_NM')
-    q_path = os.path.join(gauges, 'GaugeQ')
-    compare_ppt_discharge(q_ppt_data_path)'''
-    q_ppt_data_path = os.path.join("d:\\Rinf","BasinPPT")
+    #home line
+    q_ppt_data_path = os.path.join("e:\\Rinf\\BasinPPT\\")
     compare_ppt_discharge(q_ppt_data_path)
 # ============= EOF =============================================
 
