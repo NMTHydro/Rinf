@@ -23,18 +23,16 @@ dgketchum 24 JUL 2016
 """
 
 import os
-from pandas import DataFrame, to_numeric
+from pandas import DataFrame
 from numpy import loadtxt, array
 from datetime import datetime
 import matplotlib.pyplot as plt
 
 
-def compare_ppt_discharge(combo_path):
+def compare_ppt_discharge(combo_path, etrm_results_path):
 
     name_list = []
-    os.chdir(combo_path)
     combo_files = os.listdir(combo_path)
-    return combo_files
     data_dict = {}
     for item in combo_files:
         gauge_key = item[:8]
@@ -49,9 +47,13 @@ def compare_ppt_discharge(combo_path):
         data = csv[:, 1:]
         data = array(data, dtype=float)
         df = DataFrame(data, index=ind, columns=cols)
-        data_dict.update({gauge_key: {'Name': gauge_name, 'Start_End': (start, end), 'Data': df}})
+        data_dict[gauge_key] = {'Name': gauge_name, 'Start_End': (start, end), 'Data': df}
         name_list.append(data_dict[gauge_key]['Name'])
-    return name_list
+    for item in etrm_results_path:
+        gauge_key = item[:8]
+        csv = loadtxt(item, dtype=float, delimiter=',',)
+
+        # put plots here #
 
 if __name__ == '__main__':
     home = os.path.expanduser('~')
@@ -59,7 +61,8 @@ if __name__ == '__main__':
     gauges = os.path.join(home, 'Documents', 'Recharge', 'Gauges')
     q_ppt_data_path = os.path.join(gauges, 'BasinPPT_GaugeQ_NM')
     q_path = os.path.join(gauges, 'GaugeQ')
-    compare_ppt_discharge(q_ppt_data_path)
+    etrm_path = os.path.join('F:\\', 'ETRM_Inputs', 'NM_Geo_Shapes', 'Selected_Basin_Polygons')
+    compare_ppt_discharge(q_ppt_data_path, etrm_path)
 
 # ============= EOF =============================================
     
