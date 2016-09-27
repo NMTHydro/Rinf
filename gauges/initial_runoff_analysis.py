@@ -68,7 +68,7 @@ def compare_ppt_discharge(combo_path):
 
 if __name__ == '__main__':
     #home line
-    q_ppt_data_path = os.path.join("e:\\Rinf\\Bas
+    q_ppt_data_path = os.path.join("e:\\Rinf\\BasinPPT')
 
 
                                    #Rif
