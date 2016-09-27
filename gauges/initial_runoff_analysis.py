@@ -81,7 +81,7 @@ if __name__ == '__main__':
     q_path = os.path.join(gauges, 'GaugeQ')
     compare_ppt_discharge(q_ppt_data_path)
 
-# ============= EOF =============================================
+# ============= EOF ============================================= #
     
 
 
