@@ -23,7 +23,7 @@ dgketchum 24 JUL 2016
 """
 
 import os
-from pandas import DataFrame, concat, Series
+from pandas import DataFrame, concat, Series, date_range
 from numpy import loadtxt, array
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -32,6 +32,7 @@ import matplotlib.pyplot as plt
 def compare_ppt_discharge(combo_path, etrm_tabulated):
     """ compare PRISM precipitation, USGS gauge data, and ETRM results.
 
+    :param etrm_tabulated:
     :param combo_path:
     :param etrm_results_path:
     :return:
@@ -59,15 +60,36 @@ def compare_ppt_discharge(combo_path, etrm_tabulated):
                 '{}_{}.csv'.format(start_yr_str, end_yr_str))
             # csv in format: [YYY/MM/DD, q[cfs], ppt[m**3] #
             # no headers in them #
-            cols = ['Discharge_[cfs]', 'Precipitation_[m^3]']
+            cols = ['q_obs_cbm', 'precip_cbm']
             csv = loadtxt(os.path.join(combo_path, etrm_name), dtype=str, delimiter=',')
-            ind = csv[:, 0]
+            ind = date_range(csv[0, 0], csv[-1, 0])
             data = csv[:, 1:]
             data = array(data, dtype=float)
             df = DataFrame(data, index=ind, columns=cols)
-            cum_q = Series(df['Discharge_[cfs]'].cumsum(), name='Cumulative_Discharge[cf]')
-            cum_ppt = Series(df['Precipitation_[m^3]'].cumsum(), name='Cumulative_Precip')
-            df = concat([df, cum_q, cum_ppt], axis=1)
+            print 'pre-conversion obs dg: {}'.format(df)
+            # convert mean daily cfs to cubic meters per day
+            df['q_obs_cbm'] *= 86400 / 35.3147  # sec/day cbm/cft
+            print 'gauge ppt obs df: \n{}'.format(df)
+
+            etrm_csv = loadtxt(os.path.join(etrm_tabulated, etrm_name), dtype=str, delimiter=',', skiprows=0,
+                               usecols=[0, 2, 4, 6, 8, 10, 12, 14])  # load only odd rows (cubic meters)
+            etrm_ind = date_range(etrm_csv[3, 0], etrm_csv[-1, 0])
+            etrm_data = etrm_csv[3:, 1:]
+            etrm_data = array(etrm_data, dtype=float)
+            etrm_cols = etrm_csv[0, 1:]
+            etrm_df = DataFrame(etrm_data, index=etrm_ind, columns=etrm_cols)
+            print 'etrm df:\n{}'.format(etrm_df)
+
+            start, end = etrm_df.index[0], etrm_df.index[-1]
+
+            df = concat([df, etrm_df], axis=1)
+            df = df.loc[start:end]
+            cum_q = Series(df['q_obs_cbm'].cumsum(), name='cum_q_cbm')
+            cum_ppt = Series(df['precip_cbm'].cumsum(), name='cum_precip_cbm')
+            cum_ro = Series(df['ro'].cumsum(), name='cum_ro')
+
+            df = concat([df, cum_q, cum_ppt, cum_ro], axis=1)
+
             print 'new df with cumulative terms: \n{}'.format(df)
             data_dict[gauge_key] = {'Name': gauge_name, 'Start_End': (start, end), 'Data': df}
             name_list.append(data_dict[gauge_key]['Name'])
@@ -81,10 +103,10 @@ def compare_ppt_discharge(combo_path, etrm_tabulated):
         #     print data_dict
 
         # need to find out the name of the variables
-        for key, series in data_dict.iteritems():
-            df = series['Data']
-            df.plot(kind='line', subplots=2, title=series['Name'])
-            plt.show()
+        # for key, series in data_dict.iteritems():
+        #     df = series['Data']
+        #     df.plot(kind='line', subplots=2, title=series['Name'])
+        #     plt.show()
             # plt.subplot(df[:, 0], df[:. 1])
             # fig = ax.get_figure()
             # how to call the name here
