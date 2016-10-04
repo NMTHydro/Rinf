@@ -29,7 +29,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 
-def compare_ppt_discharge(combo_path, etrm_tabulated):
+def compare_ppt_discharge(combo_path, etrm_tabulated, save_text):
     """ compare PRISM precipitation, USGS gauge data, and ETRM results.
 
     :param etrm_tabulated:
@@ -94,6 +94,7 @@ def compare_ppt_discharge(combo_path, etrm_tabulated):
             data_dict[gauge_key] = {'Name': gauge_name, 'Start_End': (start, end), 'Data': df}
             name_list.append(data_dict[gauge_key]['Name'])
 
+            df.to_csv(os.path.join(save_text, '{}_wCumTerms.csv'.format(gauge_name)), sep=',')
         # for item in etrm_results_path:
         #     gauge_key = item[:8]
         #     csv = loadtxt(item, dtype=float, delimiter=',',)
@@ -124,6 +125,7 @@ if __name__ == '__main__':
     q_ppt_data_path = os.path.join(gauges, 'BasinPPT_GaugeQ_NM')
     q_path = os.path.join(gauges, 'GaugeQ')
     etrm_results_tables = os.path.join(gauges, 'basin_etrm_out')
-    compare_ppt_discharge(q_ppt_data_path, etrm_results_tables)
+    save_txt = os.path.join('F:\\', 'ETRM_Results', 'ETRM_Results_2016_09_28')
+    compare_ppt_discharge(q_ppt_data_path, etrm_results_tables, save_txt)
 
 # ============= EOF ============================================= #
